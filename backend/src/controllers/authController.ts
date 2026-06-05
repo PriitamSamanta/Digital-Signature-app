@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import generateToken from "../utils/generateToken";
 
 import User from "../models/User";
+import { AuthRequest } from "../types/auth";
 
 export const register = async (
   req: Request,
@@ -104,6 +105,34 @@ export const login = async (
   } catch (error) {
     console.error(error);
 
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+export const getMe = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    const user = await User.findById(req.userId).select("-password");
+
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: "Server Error",
