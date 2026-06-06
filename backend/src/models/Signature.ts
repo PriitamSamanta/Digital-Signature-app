@@ -9,8 +9,8 @@ export interface ISignature extends MDocument {
 
   page: number;
 
-  x: number;
-  y: number;
+  xPercent: number;
+  yPercent: number;
 
   signatureType: "typed" | "drawn";
 
@@ -40,16 +40,15 @@ const signatureSchema = new Schema<ISignature>(
       required: true,
     },
 
-    x: {
+    xPercent: {
       type: Number,
       required: true,
     },
 
-    y: {
+    yPercent: {
       type: Number,
       required: true,
     },
-
     signatureType: {
       type: String,
       enum: ["typed", "drawn"],

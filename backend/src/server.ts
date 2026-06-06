@@ -5,6 +5,7 @@ import path from "path";
 import connectDB from "./config/db";
 import authRoutes from "./routes/authRoutes";
 import documentRoutes from "./routes/documentRoutes";
+import signatureRoutes from "./routes/signatureRoutes";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/docs", documentRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+app.use("/api/signatures", signatureRoutes);
 
 app.get("/", (_, res) => {
   res.json({
