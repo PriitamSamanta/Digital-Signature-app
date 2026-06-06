@@ -5,6 +5,8 @@ import { useParams } from "next/navigation";
 
 import { getDocumentById } from "@/features/documents/services/documentService";
 import dynamic from "next/dynamic";
+import SignatureToolbar from "@/features/signatures/components/SignatureToolbar";
+import SignatureOverlay from "@/features/signatures/components/SignatureOverlay";
 
 const PdfViewer = dynamic(
     () =>
@@ -17,7 +19,18 @@ const PdfViewer = dynamic(
 );
 
 export default function DocumentPage() {
+
+    const [
+        signatureText,
+        setSignatureText,
+    ] = useState("");
     const params = useParams();
+
+    const [position, setPosition] =
+        useState({
+            x: 200,
+            y: 200,
+        });
 
     const id = params.id as string;
 
@@ -58,10 +71,41 @@ export default function DocumentPage() {
         )}`;
 
     return (
-        <div>
+        <div
+            className="relative"
+            onClick={(e) => {
+                const rect =
+                    e.currentTarget.getBoundingClientRect();
+
+                setPosition({
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top,
+                });
+            }}
+        >
             <h1>{document.title}</h1>
 
             <PdfViewer fileUrl={pdfUrl} />
+            <SignatureToolbar
+                onAddSignature={() => {
+                    const text =
+                        prompt(
+                            "Enter Signature"
+                        );
+
+                    if (text) {
+                        setSignatureText(text);
+                    }
+                }}
+            />
+
+            {signatureText && (
+                <SignatureOverlay
+                    text={signatureText}
+                    x={position.x}
+                    y={position.y}
+                />
+            )}
         </div>
     );
 }
