@@ -1,6 +1,5 @@
 interface Props {
   text: string;
-
   x: number;
   y: number;
 }
@@ -10,18 +9,18 @@ export default function SignatureOverlay({
   x,
   y,
 }: Props) {
+  
   return (
     <div
       className="
-        absolute    
-        top-[200px]
-        left-[200px]
+        absolute
         text-xl
         font-bold
+        text-black
       "
       style={{
-        left: x,
-        top: y,
+        left: `${x}px`,
+        top: `${y}px`,
       }}
     >
       {text}
