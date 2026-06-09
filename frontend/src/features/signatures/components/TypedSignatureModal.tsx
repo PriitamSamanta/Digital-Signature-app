@@ -3,36 +3,84 @@
 import { useState } from "react";
 
 interface Props {
-  onSave: (
-    signature: string
-  ) => void;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (signature: string) => void;
 }
 
 export default function TypedSignatureModal({
+  isOpen,
+  onClose,
   onSave,
 }: Props) {
   const [signature, setSignature] =
     useState("");
 
-  return (
-    <div>
-      <input
-        value={signature}
-        onChange={(e) =>
-          setSignature(
-            e.target.value
-          )
-        }
-        placeholder="Type Signature"
-      />
+  if (!isOpen) return null;
 
-      <button
-        onClick={() =>
-          onSave(signature)
-        }
-      >
-        Save
-      </button>
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+        <h2 className="mb-2 text-xl font-semibold">
+          Add Signature
+        </h2>
+
+        <p className="mb-4 text-sm text-slate-500">
+          Type your signature below.
+        </p>
+
+        <input
+          value={signature}
+          onChange={(e) =>
+            setSignature(
+              e.target.value
+            )
+          }
+          placeholder="Type your signature"
+          className="w-full rounded-lg border border-slate-300 p-3 outline-none focus:border-blue-500"
+        />
+
+        {/* Preview */}
+        {signature && (
+          <div className="mt-4 rounded-lg border bg-slate-50 p-4">
+            <p className="mb-2 text-xs text-slate-500">
+              Signature Preview
+            </p>
+
+            <p
+              className="text-2xl italic"
+              style={{
+                fontFamily: "cursive",
+              }}
+            >
+              {signature}
+            </p>
+          </div>
+        )}
+
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="rounded-lg border px-4 py-2"
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={() => {
+              if (!signature.trim())
+                return;
+
+              onSave(signature);
+
+              setSignature("");
+            }}
+            className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+          >
+            Use Signature
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

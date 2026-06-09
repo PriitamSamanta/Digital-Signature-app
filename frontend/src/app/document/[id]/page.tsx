@@ -4,9 +4,11 @@ import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
 
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import { getDocumentById } from "@/features/documents/services/documentService";
 import SignatureToolbar from "@/features/signatures/components/SignatureToolbar";
 import SignatureOverlay from "@/features/signatures/components/SignatureOverlay";
+import TypedSignatureModal from "@/features/signatures/components/TypedSignatureModal";
 import { createSignature, getSignatures } from "@/features/signatures/services/signatureService";
 
 const PdfViewer = dynamic(
@@ -44,7 +46,11 @@ export default function DocumentPage() {
     const [savedSignatures, setSavedSignatures] =
         useState<any[]>([]);
 
+    const [isModalOpen, setIsModalOpen] =
+        useState(false);
+
     const pdfContainerRef = useRef<HTMLDivElement>(null);
+
 
     useEffect(() => {
         if (!id) return;
@@ -73,7 +79,15 @@ export default function DocumentPage() {
     }, [id]);
 
     if (!document) {
-        return <p>Loading...</p>;
+        return (
+            <DashboardLayout>
+                <div className="flex h-[70vh] items-center justify-center">
+                    <div className="rounded-xl bg-white px-8 py-6 shadow-sm">
+                        Loading document...
+                    </div>
+                </div>
+            </DashboardLayout>
+        );
     }
 
     const pdfUrl =
@@ -87,11 +101,6 @@ export default function DocumentPage() {
             ? savedSignatures[0]
             : null;
 
-    console.log(
-        "LATEST SIGNATURE",
-        latestSignature
-    );
-
     const containerWidth =
         pdfContainerRef.current?.clientWidth || 0;
 
@@ -99,108 +108,125 @@ export default function DocumentPage() {
         pdfContainerRef.current?.clientHeight || 0;
 
     return (
-        <div className="p-4">
-            <h1 className="mb-4 text-xl font-bold">
-                {document.title}
-            </h1>
+        <DashboardLayout>
+            <div className="mx-auto max-w-7xl">
+                {/* Header */}
+                <div className="mb-6 rounded-xl bg-white p-6 shadow-sm">
+                    <h1 className="text-2xl font-bold text-slate-900">
+                        {document.title}
+                    </h1>
 
-            <SignatureToolbar
-                onAddSignature={() => {
-                    const text = prompt(
-                        "Enter Signature"
-                    );
+                    <p className="mt-2 text-sm text-slate-500">
+                        Review and sign your document.
+                    </p>
+                </div>
 
-                    if (!text) return;
-
-                    setSignatureText(text);
-
-                    setIsPlacingSignature(true);
-
-                    alert(
-                        "Now click on the PDF where you want to place the signature."
-                    );
-                }}
-            />
-
-            <div
-                ref={pdfContainerRef}
-                className="relative mt-4"
-                onClick={async (e) => {
-                    if (!isPlacingSignature) return;
-
-                    const rect =
-                        e.currentTarget.getBoundingClientRect();
-
-                    const x =
-                        e.clientX - rect.left;
-
-                    const y =
-                        e.clientY - rect.top;
-
-                    const xPercent =
-                        (x / rect.width) * 100;
-
-                    const yPercent =
-                        (y / rect.height) * 100;
-
-                    const newPosition = {
-                        x,
-                        y,
-                        xPercent,
-                        yPercent,
-                    };
-
-                    console.log(
-                        "CLICK POSITION",
-                        newPosition
-                    );
-
-                    setPosition(newPosition);
-
-                    try {
-                        await createSignature({
-                            documentId: id,
-
-                            page: 1,
-
-                            xPercent,
-
-                            yPercent,
-
-                            signatureType: "typed",
-
-                            signatureText,
-                        });
-
-                        const signatureData =
-                            await getSignatures(id);
-
-                        setSavedSignatures(
-                            signatureData.signatures
-                        );
-
-                        setIsPlacingSignature(false);
-                    } catch (error) {
-                        console.error(error);
-                    }
-                }}
-            >
-                <PdfViewer fileUrl={pdfUrl} />
-
-                {latestSignature && (
-                    <SignatureOverlay
-                        text={latestSignature.signatureText}
-                        x={
-                            (latestSignature.xPercent / 100) *
-                            containerWidth
-                        }
-                        y={
-                            (latestSignature.yPercent / 100) *
-                            containerHeight
+                {/* Toolbar */}
+                <div className="mb-6 rounded-xl bg-white p-4 shadow-sm">
+                    <SignatureToolbar
+                        onAddSignature={() =>
+                            setIsModalOpen(true)
                         }
                     />
-                )}
+
+                    {isPlacingSignature && (
+                        <p className="mt-3 text-sm font-medium text-blue-600">
+                            Click anywhere on the PDF to place your signature.
+                        </p>
+                    )}
+                </div>
+
+                {/* PDF Workspace */}
+                <div className="rounded-xl bg-white p-6 shadow-sm">
+                    <div
+                        ref={pdfContainerRef}
+                        className="relative overflow-auto rounded-lg border border-slate-200 bg-slate-100 p-4"
+                        onClick={async (e) => {
+                            if (!isPlacingSignature) return;
+
+                            const rect =
+                                e.currentTarget.getBoundingClientRect();
+
+                            const x =
+                                e.clientX - rect.left;
+
+                            const y =
+                                e.clientY - rect.top;
+
+                            const xPercent =
+                                (x / rect.width) * 100;
+
+                            const yPercent =
+                                (y / rect.height) * 100;
+
+                            const newPosition = {
+                                x,
+                                y,
+                                xPercent,
+                                yPercent,
+                            };
+
+                            setPosition(newPosition);
+
+                            try {
+                                await createSignature({
+                                    documentId: id,
+                                    page: 1,
+                                    xPercent,
+                                    yPercent,
+                                    signatureType: "typed",
+                                    signatureText,
+                                });
+
+                                const signatureData =
+                                    await getSignatures(id);
+
+                                setSavedSignatures(
+                                    signatureData.signatures
+                                );
+
+                                setIsPlacingSignature(false);
+                            } catch (error) {
+                                console.error(error);
+                            }
+                        }}
+                    >
+                        <PdfViewer fileUrl={pdfUrl} />
+
+                        {latestSignature && (
+                            <SignatureOverlay
+                                text={
+                                    latestSignature.signatureText
+                                }
+                                x={
+                                    (latestSignature.xPercent /
+                                        100) *
+                                    containerWidth
+                                }
+                                y={
+                                    (latestSignature.yPercent /
+                                        100) *
+                                    containerHeight
+                                }
+                            />
+                        )}
+                    </div>
+                </div>
+
+                <TypedSignatureModal
+                    isOpen={isModalOpen}
+                    onClose={() =>
+                        setIsModalOpen(false)
+                    }
+                    onSave={(signature) => {
+                        setSignatureText(signature);
+
+                        setIsModalOpen(false);
+
+                        setIsPlacingSignature(true);
+                    }}
+                />
             </div>
-        </div>
+        </DashboardLayout>
     );
 }
