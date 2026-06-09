@@ -1,11 +1,59 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import DashboardLayout from "@/components/layout/DashboardLayout";
 
 import UploadDocument from "@/features/documents/components/UploadDocument";
 import DocumentsList from "@/features/documents/components/DocumentsList";
 
+import { getDocuments } from "@/features/documents/services/documentService";
+
 export default function DashboardPage() {
+  const [totalDocuments, setTotalDocuments] =
+    useState(0);
+
+  const [pendingDocuments, setPendingDocuments] =
+    useState(0);
+
+  const [signedDocuments, setSignedDocuments] =
+    useState(0);
+
+  useEffect(() => {
+    const fetchDashboardData =
+      async () => {
+        try {
+          const data =
+            await getDocuments();
+
+          const documents =
+            data.documents || [];
+
+          setTotalDocuments(
+            documents.length
+          );
+
+          setPendingDocuments(
+            documents.filter(
+              (doc: any) =>
+                doc.status === "pending"
+            ).length
+          );
+
+          setSignedDocuments(
+            documents.filter(
+              (doc: any) =>
+                doc.status === "signed"
+            ).length
+          );
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+    fetchDashboardData();
+  }, []);
+
   return (
     <DashboardLayout>
       <div className="p-6">
@@ -29,17 +77,17 @@ export default function DashboardPage() {
               </p>
 
               <h2 className="mt-2 text-3xl font-bold">
-                0
+                {totalDocuments}
               </h2>
             </div>
 
             <div className="rounded-xl bg-white p-6 shadow-sm">
               <p className="text-sm text-slate-500">
-                Pending Signatures
+                Pending Documents
               </p>
 
               <h2 className="mt-2 text-3xl font-bold text-amber-500">
-                0
+                {pendingDocuments}
               </h2>
             </div>
 
@@ -49,7 +97,7 @@ export default function DashboardPage() {
               </p>
 
               <h2 className="mt-2 text-3xl font-bold text-green-600">
-                0
+                {signedDocuments}
               </h2>
             </div>
           </div>

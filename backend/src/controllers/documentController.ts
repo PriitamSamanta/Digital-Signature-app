@@ -22,6 +22,7 @@ export const uploadDocument = async (
       filePath: req.file.path,
       fileSize: req.file.size,
       ownerId: req.userId,
+      status: "pending",
     });
 
     res.status(201).json({
@@ -77,6 +78,44 @@ export const getDocumentById = async (
 
       return;
     }
+
+    res.status(200).json({
+      success: true,
+      document,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+export const updateDocumentStatus = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    const { status } = req.body;
+
+    const document =
+      await Document.findOne({
+        _id: req.params.id,
+        ownerId: req.userId,
+      });
+
+    if (!document) {
+      res.status(404).json({
+        success: false,
+        message: "Document not found",
+      });
+
+      return;
+    }
+
+    document.status = status;
+
+    await document.save();
 
     res.status(200).json({
       success: true,

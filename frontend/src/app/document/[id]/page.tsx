@@ -112,9 +112,18 @@ export default function DocumentPage() {
             <div className="mx-auto max-w-7xl">
                 {/* Header */}
                 <div className="mb-6 rounded-xl bg-white p-6 shadow-sm">
-                    <h1 className="text-2xl font-bold text-slate-900">
-                        {document.title}
-                    </h1>
+                    <div className="mt-3">
+                        <span
+                            className={`rounded-full px-3 py-1 text-sm font-medium ${document.status === "signed"
+                                    ? "bg-green-100 text-green-700"
+                                    : document.status === "rejected"
+                                        ? "bg-red-100 text-red-700"
+                                        : "bg-amber-100 text-amber-700"
+                                }`}
+                        >
+                            {document.status.charAt(0).toUpperCase() + document.status.slice(1)}
+                        </span>
+                    </div>
 
                     <p className="mt-2 text-sm text-slate-500">
                         Review and sign your document.

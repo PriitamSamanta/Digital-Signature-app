@@ -2,6 +2,7 @@ import { Response } from "express";
 
 import Signature from "../models/Signature";
 import { AuthRequest } from "../types/auth";
+import Document from "../models/Document";
 
 export const createSignature = async (
   req: AuthRequest,
@@ -40,6 +41,13 @@ export const createSignature = async (
 
       status: "pending",
     });
+
+    await Document.findByIdAndUpdate(
+      documentId,
+      {
+        status: "signed",
+      }
+    );
 
     res.status(201).json({
       success: true,
