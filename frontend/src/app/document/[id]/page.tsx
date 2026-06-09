@@ -28,21 +28,6 @@ export default function DocumentPage() {
     const [document, setDocument] =
         useState<any>(null);
 
-    const [signatureText, setSignatureText] =
-        useState("");
-
-    const [isPlacingSignature, setIsPlacingSignature] =
-        useState(false);
-
-
-    const [position, setPosition] =
-        useState({
-            x: 200,
-            y: 200,
-            xPercent: 0,
-            yPercent: 0,
-        });
-
     const [savedSignatures, setSavedSignatures] =
         useState<any[]>([]);
 
@@ -50,6 +35,13 @@ export default function DocumentPage() {
         useState(false);
 
     const pdfContainerRef = useRef<HTMLDivElement>(null);
+
+    const [draftSignature, setDraftSignature] =
+        useState<{
+            text: string;
+            x: number;
+            y: number;
+        } | null>(null);
 
 
     useEffect(() => {
@@ -96,10 +88,6 @@ export default function DocumentPage() {
             "/"
         )}`;
 
-    const latestSignature =
-        savedSignatures.length > 0
-            ? savedSignatures[0]
-            : null;
 
     const containerWidth =
         pdfContainerRef.current?.clientWidth || 0;
@@ -115,10 +103,10 @@ export default function DocumentPage() {
                     <div className="mt-3">
                         <span
                             className={`rounded-full px-3 py-1 text-sm font-medium ${document.status === "signed"
-                                    ? "bg-green-100 text-green-700"
-                                    : document.status === "rejected"
-                                        ? "bg-red-100 text-red-700"
-                                        : "bg-amber-100 text-amber-700"
+                                ? "bg-green-100 text-green-700"
+                                : document.status === "rejected"
+                                    ? "bg-red-100 text-red-700"
+                                    : "bg-amber-100 text-amber-700"
                                 }`}
                         >
                             {document.status.charAt(0).toUpperCase() + document.status.slice(1)}
@@ -137,12 +125,81 @@ export default function DocumentPage() {
                             setIsModalOpen(true)
                         }
                     />
+                    {draftSignature && (
+                        <button
+                            onClick={async () => {
+                                if (
+                                    !draftSignature ||
+                                    !pdfContainerRef.current
+                                )
+                                    return;
 
-                    {isPlacingSignature && (
-                        <p className="mt-3 text-sm font-medium text-blue-600">
-                            Click anywhere on the PDF to place your signature.
-                        </p>
+                                const width =
+                                    pdfContainerRef.current.clientWidth;
+
+                                const height =
+                                    pdfContainerRef.current.clientHeight;
+
+                                const safeX = Math.max(
+                                    0,
+                                    draftSignature.x
+                                );
+
+                                const safeY = Math.max(
+                                    0,
+                                    draftSignature.y
+                                );
+
+                                const xPercent =
+                                    (safeX / width) * 100;
+
+                                const yPercent =
+                                    (safeY / height) * 100;
+
+
+                                console.log("Draft Signature");
+                                console.log(draftSignature);
+
+                                console.log("Container Width:", width);
+                                console.log("Container Height:", height);
+
+                                console.log("xPercent:", xPercent);
+                                console.log("yPercent:", yPercent);
+
+                                try {
+                                    await createSignature({
+                                        documentId: id,
+                                        page: 1,
+                                        xPercent,
+                                        yPercent,
+                                        signatureType: "typed",
+                                        signatureText:
+                                            draftSignature.text,
+                                    });
+
+                                    const signatureData =
+                                        await getSignatures(id);
+
+                                    console.log(
+                                        "Saved Signatures:",
+                                        signatureData.signatures
+                                    );
+
+                                    setSavedSignatures(
+                                        signatureData.signatures
+                                    );
+
+                                    setDraftSignature(null);
+                                } catch (error) {
+                                    console.error(error);
+                                }
+                            }}
+                            className="mt-3 rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                        >
+                            Save Signature
+                        </button>
                     )}
+
                 </div>
 
                 {/* PDF Workspace */}
@@ -150,74 +207,42 @@ export default function DocumentPage() {
                     <div
                         ref={pdfContainerRef}
                         className="relative overflow-auto rounded-lg border border-slate-200 bg-slate-100 p-4"
-                        onClick={async (e) => {
-                            if (!isPlacingSignature) return;
-
-                            const rect =
-                                e.currentTarget.getBoundingClientRect();
-
-                            const x =
-                                e.clientX - rect.left;
-
-                            const y =
-                                e.clientY - rect.top;
-
-                            const xPercent =
-                                (x / rect.width) * 100;
-
-                            const yPercent =
-                                (y / rect.height) * 100;
-
-                            const newPosition = {
-                                x,
-                                y,
-                                xPercent,
-                                yPercent,
-                            };
-
-                            setPosition(newPosition);
-
-                            try {
-                                await createSignature({
-                                    documentId: id,
-                                    page: 1,
-                                    xPercent,
-                                    yPercent,
-                                    signatureType: "typed",
-                                    signatureText,
-                                });
-
-                                const signatureData =
-                                    await getSignatures(id);
-
-                                setSavedSignatures(
-                                    signatureData.signatures
-                                );
-
-                                setIsPlacingSignature(false);
-                            } catch (error) {
-                                console.error(error);
-                            }
-                        }}
                     >
                         <PdfViewer fileUrl={pdfUrl} />
 
-                        {latestSignature && (
+                        {draftSignature && (
                             <SignatureOverlay
-                                text={
-                                    latestSignature.signatureText
-                                }
-                                x={
-                                    (latestSignature.xPercent /
-                                        100) *
-                                    containerWidth
-                                }
-                                y={
-                                    (latestSignature.yPercent /
-                                        100) *
-                                    containerHeight
-                                }
+                                text={draftSignature.text}
+                                x={draftSignature.x}
+                                y={draftSignature.y}
+                                draggable
+                                onDragStop={(x, y) => {
+                                    setDraftSignature({
+                                        ...draftSignature,
+                                        x,
+                                        y,
+                                    });
+                                }}
                             />
+                        )}
+
+                        {savedSignatures.map(
+                            (signature, index) => (
+                                <SignatureOverlay
+                                    key={index}
+                                    text={
+                                        signature.signatureText
+                                    }
+                                    x={
+                                        (signature.xPercent / 100) *
+                                        containerWidth
+                                    }
+                                    y={
+                                        (signature.yPercent / 100) *
+                                        containerHeight
+                                    }
+                                />
+                            )
                         )}
                     </div>
                 </div>
@@ -228,11 +253,13 @@ export default function DocumentPage() {
                         setIsModalOpen(false)
                     }
                     onSave={(signature) => {
-                        setSignatureText(signature);
+                        setDraftSignature({
+                            text: signature,
+                            x: 200,
+                            y: 200,
+                        });
 
                         setIsModalOpen(false);
-
-                        setIsPlacingSignature(true);
                     }}
                 />
             </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { useAuthStore } from "@/store/authStore";
@@ -18,18 +18,36 @@ export default function AuthGuard({
     (state) => state.token
   );
 
+  const [hydrated, setHydrated] =
+    useState(false);
+
   useEffect(() => {
-    if (!token) {
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (
+      hydrated &&
+      !token
+    ) {
       router.replace("/login");
     }
-  }, [token, router]);
+  }, [
+    hydrated,
+    token,
+    router,
+  ]);
 
-  if (!token) {
+  if (!hydrated) {
     return (
       <div className="flex h-screen items-center justify-center">
         Loading...
       </div>
     );
+  }
+
+  if (!token) {
+    return null;
   }
 
   return <>{children}</>;
