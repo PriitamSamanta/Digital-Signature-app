@@ -1,4 +1,6 @@
 export interface Signature {
+  _id: string;
+
   documentId: string;
 
   page: number;
@@ -6,9 +8,16 @@ export interface Signature {
   xPercent: number;
   yPercent: number;
 
-  signatureType: "typed" | "drawn";
+  signatureType: "typed";
 
-  signatureText?: string;
+  signatureText: string;
 
-  signatureImage?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface DraftSignature {
+  text: string;
+  x: number;
+  y: number;
 }

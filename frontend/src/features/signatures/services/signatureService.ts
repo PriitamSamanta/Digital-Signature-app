@@ -1,4 +1,5 @@
 import api from "@/services/api";
+import { GetSignaturesResponse } from "../types/signatureResponse";
 
 export const createSignature = async (
   payload: {
@@ -23,7 +24,7 @@ export const createSignature = async (
 
 export const getSignatures = async (
   documentId: string
-) => {
+): Promise<GetSignaturesResponse> => {
   const response = await api.get(
     `/signatures/${documentId}`
   );

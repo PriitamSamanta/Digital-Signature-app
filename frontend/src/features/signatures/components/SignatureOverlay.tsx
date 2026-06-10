@@ -7,7 +7,9 @@ interface Props {
   text: string;
   x: number;
   y: number;
+
   draggable?: boolean;
+
   onDragStop?: (
     x: number,
     y: number
@@ -24,37 +26,29 @@ export default function SignatureOverlay({
   const nodeRef =
     useRef<HTMLDivElement>(null);
 
-  const signature = (
-    <div
-      ref={nodeRef}
-      className="
-        rounded-md
-        border-2
-        border-blue-400
-        bg-white
-        px-3
-        py-2
-        text-xl
-        font-bold
-        italic
-        shadow
-        select-none
-      "
-    >
-      {text}
-    </div>
-  );
-
   if (!draggable) {
     return (
       <div
-        className="absolute"
+        className="
+          absolute
+          rounded-md
+          border-2
+          border-blue-400
+          bg-white
+          px-3
+          py-2
+          text-xl
+          font-bold
+          italic
+          shadow
+          select-none
+        "
         style={{
           left: x,
           top: y,
         }}
       >
-        {signature}
+        {text}
       </div>
     );
   }
@@ -63,7 +57,7 @@ export default function SignatureOverlay({
     <Draggable
       nodeRef={nodeRef}
       bounds="parent"
-      defaultPosition={{
+      position={{
         x,
         y,
       }}
@@ -75,22 +69,23 @@ export default function SignatureOverlay({
       }}
     >
       <div
+        id="draft-signature"
         ref={nodeRef}
         className="
-        absolute
-        cursor-move
-        rounded-md
-        border-2
-        border-blue-400
-        bg-white
-        px-3
-        py-2
-        text-xl
-        font-bold
-        italic
-        shadow
-        select-none
-      "
+          absolute
+          cursor-move
+          rounded-md
+          border-2
+          border-blue-400
+          bg-white
+          px-3
+          py-2
+          text-xl
+          font-bold
+          italic
+          shadow
+          select-none
+        "
       >
         {text}
       </div>

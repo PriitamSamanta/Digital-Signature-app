@@ -57,8 +57,7 @@ export default function PdfViewer({
         </div>
 
         <div className="text-sm text-slate-500">
-          {numPages} Page
-          {numPages !== 1 ? "s" : ""}
+          Pages: {numPages}
         </div>
       </div>
 
@@ -68,6 +67,11 @@ export default function PdfViewer({
         loading={
           <div className="rounded-lg bg-white p-6 text-center">
             Loading PDF...
+          </div>
+        }
+        error={
+          <div className="rounded-lg bg-red-50 p-6 text-center text-red-600">
+            Failed to load PDF
           </div>
         }
         onLoadSuccess={({ numPages }) =>
