@@ -37,7 +37,7 @@ export default function TypedSignatureModal({
             )
           }
           placeholder="Type your signature"
-          className="w-full rounded-lg border border-slate-300 p-3 outline-none focus:border-blue-500"
+          className="w-full rounded-lg border border-slate-300 p-3 text-black outline-none focus:border-blue-500"
         />
 
         {/* Preview */}
@@ -48,7 +48,7 @@ export default function TypedSignatureModal({
             </p>
 
             <p
-              className="text-2xl italic"
+              className="text-2xl italic text-black"
               style={{
                 fontFamily: "cursive",
               }}
@@ -75,7 +75,7 @@ export default function TypedSignatureModal({
 
               setSignature("");
             }}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            className="rounded-lg bg-blue-600 px-4 py-2 text-black hover:bg-blue-700"
           >
             Use Signature
           </button>

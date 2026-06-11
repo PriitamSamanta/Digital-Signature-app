@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Draggable from "react-draggable";
+import { useEffect } from "react";
 
 interface Props {
   text: string;
@@ -23,6 +24,7 @@ export default function SignatureOverlay({
   draggable = false,
   onDragStop,
 }: Props) {
+
   const nodeRef =
     useRef<HTMLDivElement>(null);
 
@@ -53,6 +55,18 @@ export default function SignatureOverlay({
     );
   }
 
+  useEffect(() => {
+    console.log(
+      "SignatureOverlay Mounted"
+    );
+
+    return () => {
+      console.log(
+        "SignatureOverlay Unmounted"
+      );
+    };
+  }, []);
+
   return (
     <Draggable
       nodeRef={nodeRef}
@@ -61,7 +75,10 @@ export default function SignatureOverlay({
         x,
         y,
       }}
-      onDrag={(_, data) => {
+      onStart={() => {
+        console.log("DRAG START");
+      }}
+      onStop={(_, data) => {
         onDragStop?.(
           data.x,
           data.y

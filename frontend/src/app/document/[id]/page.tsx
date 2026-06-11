@@ -61,6 +61,9 @@ export default function DocumentPage() {
             null
         );
 
+    const [availableSignatures, setAvailableSignatures] =
+        useState<string[]>([]);
+
     useEffect(() => {
         if (!id) return;
 
@@ -177,7 +180,7 @@ export default function DocumentPage() {
                     pageRect.height) *
                 100;
 
-    
+
 
             try {
                 await createSignature({
@@ -284,6 +287,36 @@ export default function DocumentPage() {
                         }
                     />
 
+                    <div className="mt-4 flex gap-3 flex-wrap">
+                        {availableSignatures.map(
+                            (signature, index) => (
+                                <div
+                                    key={index}
+                                    draggable
+                                    onDragStart={(e) => {
+                                        e.dataTransfer.setData(
+                                            "signature",
+                                            signature
+                                        );
+                                    }}
+                                    className="
+                                        cursor-grab
+                                        rounded-lg
+                                        border
+                                        bg-white
+                                        px-4
+                                        py-2
+                                        shadow-sm
+                                        italic
+                                        text-lg
+                                        "
+                                >
+                                    {signature}
+                                </div>
+                            )
+                        )}
+                    </div>
+
                     {draftSignature && (
                         <button
                             onClick={
@@ -301,76 +334,120 @@ export default function DocumentPage() {
                     <div
                         ref={pdfContainerRef}
                         className="relative overflow-auto rounded-lg border border-slate-200 bg-slate-100 p-4"
+
+                        onDragOver={(e) => {
+                            e.preventDefault();
+                        }}
+
+                        onDrop={(e) => {
+                            e.preventDefault();
+
+                            const signature =
+                                e.dataTransfer.getData(
+                                    "signature"
+                                );
+
+                            const rect =
+                                e.currentTarget.getBoundingClientRect();
+
+                            const x =
+                                e.clientX - rect.left;
+
+                            const y =
+                                e.clientY - rect.top;
+
+                            setDraftSignature({
+                                text: signature,
+                                x,
+                                y,
+                            });
+                        }}
                     >
-
-
-
                         <PdfViewer
                             fileUrl={pdfUrl}
                         />
 
-                        {draftSignature && (
-                            <SignatureOverlay
-                                text={
-                                    draftSignature.text
-                                }
-                                x={
-                                    draftSignature.x
-                                }
-                                y={
-                                    draftSignature.y
-                                }
-                                draggable
-                                onDragStop={(
-                                    x,
-                                    y
-                                ) => {
-                                    setDraftSignature({
-                                        ...draftSignature,
+                        <div
+                            className="
+                                absolute
+                                inset-0
+                                z-50
+                            
+                            
+                            "
+                        >
+
+                            {draftSignature && (
+
+                                <SignatureOverlay
+                                    text={
+                                        draftSignature.text
+                                    }
+                                    x={
+                                        draftSignature.x
+                                    }
+                                    y={
+                                        draftSignature.y
+                                    }
+                                    draggable
+                                    onDragStop={(
                                         x,
-                                        y,
-                                    });
-                                }}
-                            />
-                        )}
+                                        y
+                                    ) => {
+                                        setDraftSignature({
+                                            ...draftSignature,
+                                            x,
+                                            y,
+                                        });
+                                    }}
+                                />
+
+
+                            )}
+
+                            {savedSignatures.map(
+                                (
+                                    signature: Signature,
+                                    index
+                                ) => {
+
+                                    const renderX =
+                                        (signature.xPercent / 100) *
+                                        pdfSize.width;
+
+                                    const renderY =
+                                        (signature.yPercent / 100) *
+                                        pdfSize.height;
+
+                                    const finalX =
+                                        pageOffsetX + renderX;
+
+                                    const finalY =
+                                        pageOffsetY + renderY;
 
 
 
-                        {savedSignatures.map(
-                            (
-                                signature: Signature,
-                                index
-                            ) => {
 
-                                const renderX =
-                                    (signature.xPercent / 100) *
-                                    pdfSize.width;
+                                    return (
+                                        <SignatureOverlay
+                                            key={index}
+                                            text={
+                                                signature.signatureText
+                                            }
+                                            x={finalX}
+                                            y={finalY}
+                                        />
+                                    );
+                                }
+                            )}
 
-                                const renderY =
-                                    (signature.yPercent / 100) *
-                                    pdfSize.height;
-
-                                const finalX =
-                                    pageOffsetX + renderX;
-
-                                const finalY =
-                                    pageOffsetY + renderY;
-
-                                
+                        </div>
 
 
-                                return (
-                                    <SignatureOverlay
-                                        key={index}
-                                        text={
-                                            signature.signatureText
-                                        }
-                                        x={finalX}
-                                        y={finalY}
-                                    />
-                                );
-                            }
-                        )}
+
+
+
+
                     </div>
                 </div>
 
@@ -384,11 +461,10 @@ export default function DocumentPage() {
                     onSave={(
                         signature
                     ) => {
-                        setDraftSignature({
-                            text: signature,
-                            x: 200,
-                            y: 200,
-                        });
+                        setAvailableSignatures((prev) => [
+                            ...prev,
+                            signature
+                        ]);
 
                         setIsModalOpen(false);
                     }}
