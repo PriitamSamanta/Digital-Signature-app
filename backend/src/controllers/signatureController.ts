@@ -19,11 +19,7 @@ export const createSignature = async (
       signatureImage,
     } = req.body;
 
-    console.log("REQUEST BODY:");
-    console.log(req.body);
-
-    console.log("XPERCENT:", req.body.xPercent);
-    console.log("YPERCENT:", req.body.yPercent);
+    
 
     const signature = await Signature.create({
       documentId,

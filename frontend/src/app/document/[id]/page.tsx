@@ -90,26 +90,7 @@ export default function DocumentPage() {
         loadData();
     }, [id]);
 
-    useEffect(() => {
-        setTimeout(() => {
-            const page =
-                window.document.querySelector(
-                    ".react-pdf__Page"
-                ) as HTMLElement;
-
-            if (!page) return;
-
-            const rect =
-                page.getBoundingClientRect();
-
-            console.log(
-                "PDF PAGE SIZE:",
-                rect.width,
-                rect.height
-            );
-        }, 2000);
-    }, []);
-
+   
     useEffect(() => {
         const timer = setTimeout(() => {
 

@@ -55,17 +55,7 @@ export default function SignatureOverlay({
     );
   }
 
-  useEffect(() => {
-    console.log(
-      "SignatureOverlay Mounted"
-    );
-
-    return () => {
-      console.log(
-        "SignatureOverlay Unmounted"
-      );
-    };
-  }, []);
+  
 
   return (
     <Draggable
@@ -75,9 +65,7 @@ export default function SignatureOverlay({
         x,
         y,
       }}
-      onStart={() => {
-        console.log("DRAG START");
-      }}
+      
       onStop={(_, data) => {
         onDragStop?.(
           data.x,
