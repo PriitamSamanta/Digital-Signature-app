@@ -17,6 +17,7 @@ import TypedSignatureModal from "@/features/signatures/components/TypedSignature
 import {
     createSignature,
     getSignatures,
+    deleteSignature,
 } from "@/features/signatures/services/signatureService";
 import {
     Signature,
@@ -64,6 +65,13 @@ export default function DocumentPage() {
     const [availableSignatures, setAvailableSignatures] =
         useState<string[]>([]);
 
+    const [
+        selectedSignatureId,
+        setSelectedSignatureId,
+    ] = useState<string | null>(
+        null
+    );
+
     useEffect(() => {
         if (!id) return;
 
@@ -90,7 +98,7 @@ export default function DocumentPage() {
         loadData();
     }, [id]);
 
-   
+
     useEffect(() => {
         const timer = setTimeout(() => {
 
@@ -411,24 +419,52 @@ export default function DocumentPage() {
 
                                     return (
                                         <SignatureOverlay
-                                            key={index}
-                                            text={
-                                                signature.signatureText
-                                            }
+                                            key={signature._id}
+                                            text={signature.signatureText}
                                             x={finalX}
                                             y={finalY}
+                                            selected={
+                                                selectedSignatureId ===
+                                                signature._id
+                                            }
+                                            onSelect={() =>
+                                                setSelectedSignatureId(
+                                                    signature._id
+                                                )
+                                            }
+                                            onDelete={async () => {
+                                                const confirmed =
+                                                    window.confirm(
+                                                        "Delete this signature?"
+                                                    );
+
+                                                if (!confirmed) return;
+
+                                                try {
+                                                    await deleteSignature(
+                                                        signature._id
+                                                    );
+
+                                                    const signatureData =
+                                                        await getSignatures(id);
+
+                                                    setSavedSignatures(
+                                                        signatureData.signatures
+                                                    );
+
+                                                    setSelectedSignatureId(
+                                                        null
+                                                    );
+                                                } catch (error) {
+                                                    console.error(error);
+                                                }
+                                            }}
                                         />
                                     );
                                 }
                             )}
 
                         </div>
-
-
-
-
-
-
                     </div>
                 </div>
 

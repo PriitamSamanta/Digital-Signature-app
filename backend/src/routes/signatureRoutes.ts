@@ -5,6 +5,7 @@ import authMiddleware from "../middleware/authMiddleware";
 import {
   createSignature,
   getDocumentSignatures,
+  deleteSignature,
 } from "../controllers/signatureController";
 
 const router = Router();
@@ -19,6 +20,12 @@ router.get(
   "/:documentId",
   authMiddleware,
   getDocumentSignatures
+);
+
+router.delete(
+  "/:id",
+  authMiddleware,
+  deleteSignature
 );
 
 export default router;

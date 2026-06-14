@@ -11,6 +11,11 @@ interface Props {
 
   draggable?: boolean;
 
+  selected?: boolean;
+
+  onSelect?: () => void;
+  onDelete?: () => void;
+
   onDragStop?: (
     x: number,
     y: number
@@ -22,6 +27,9 @@ export default function SignatureOverlay({
   x,
   y,
   draggable = false,
+  selected = false,
+  onSelect,
+  onDelete,
   onDragStop,
 }: Props) {
 
@@ -31,31 +39,61 @@ export default function SignatureOverlay({
   if (!draggable) {
     return (
       <div
-        className="
-          absolute
-          rounded-md
-          border-2
-          border-blue-400
-          bg-white
-          px-3
-          py-2
-          text-xl
-          font-bold
-          italic
-          shadow
-          select-none
-        "
+        onClick={onSelect}
+        className="absolute"
         style={{
           left: x,
           top: y,
         }}
       >
-        {text}
+        {selected && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete?.();
+            }}
+            className="
+            absolute
+            -right-3
+            -top-3
+            flex
+            h-6
+            w-6
+            items-center
+            justify-center
+            rounded-full
+            bg-red-500
+            text-white
+            shadow
+          "
+          >
+            ×
+          </button>
+        )}
+
+        <div
+          className={`
+          cursor-pointer
+          select-none
+          text-3xl
+          italic
+          text-black
+          ${selected
+              ? "border-2 border-blue-500 rounded-md p-2"
+              : ""
+            }
+        `}
+          style={{
+            fontFamily: "cursive",
+          }}
+        >
+          {text}
+        </div>
       </div>
     );
   }
 
-  
+
 
   return (
     <Draggable
@@ -65,7 +103,7 @@ export default function SignatureOverlay({
         x,
         y,
       }}
-      
+
       onStop={(_, data) => {
         onDragStop?.(
           data.x,
@@ -79,18 +117,14 @@ export default function SignatureOverlay({
         className="
           absolute
           cursor-move
-          rounded-md
-          border-2
-          border-blue-400
-          bg-white
-          px-3
-          py-2
-          text-xl
-          font-bold
-          italic
-          shadow
           select-none
+          text-3xl
+          italic
+          text-black
         "
+        style={{
+          fontFamily: "cursive",
+        }}
       >
         {text}
       </div>

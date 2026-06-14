@@ -31,3 +31,14 @@ export const getSignatures = async (
 
   return response.data;
 };
+
+export const deleteSignature = async (
+  signatureId: string
+) => {
+  const response =
+    await api.delete(
+      `/signatures/${signatureId}`
+    );
+
+  return response.data;
+};
