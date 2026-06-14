@@ -16,6 +16,11 @@ interface Props {
   onSelect?: () => void;
   onDelete?: () => void;
 
+  onIncreaseSize?: () => void;
+
+  onDecreaseSize?: () => void;
+  fontSize?: number;
+
   onDragStop?: (
     x: number,
     y: number
@@ -31,6 +36,9 @@ export default function SignatureOverlay({
   onSelect,
   onDelete,
   onDragStop,
+  onIncreaseSize,
+  onDecreaseSize,
+  fontSize = 48,
 }: Props) {
 
   const nodeRef =
@@ -47,28 +55,63 @@ export default function SignatureOverlay({
         }}
       >
         {selected && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete?.();
-            }}
+          <div
             className="
-            absolute
-            -right-3
-            -top-3
-            flex
-            h-6
-            w-6
-            items-center
-            justify-center
-            rounded-full
-            bg-red-500
-            text-white
-            shadow
-          "
+              absolute
+              -top-8
+              right-0
+              flex
+              gap-1
+            "
           >
-            ×
-          </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onIncreaseSize?.();
+              }}
+              className="
+                h-6
+                w-6
+                rounded
+                bg-green-500
+                text-white
+              "
+            >
+              +
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDecreaseSize?.();
+              }}
+              className="
+                h-6
+                w-6
+                rounded
+                bg-yellow-500
+                text-white
+              "
+            >
+              -
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete?.();
+              }}
+              className="
+                h-6
+                w-6
+                rounded
+                bg-red-500
+                text-white
+              "
+            >
+              ×
+            </button>
+          </div>
         )}
 
         <div
@@ -85,6 +128,7 @@ export default function SignatureOverlay({
         `}
           style={{
             fontFamily: "cursive",
+            fontSize: `${fontSize}px`,
           }}
         >
           {text}

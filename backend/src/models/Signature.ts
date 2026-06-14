@@ -12,6 +12,8 @@ export interface ISignature extends MDocument {
   xPercent: number;
   yPercent: number;
 
+  fontSize: number;
+
   signatureType: "typed" | "drawn";
 
   signatureText?: string;
@@ -48,6 +50,10 @@ const signatureSchema = new Schema<ISignature>(
     yPercent: {
       type: Number,
       required: true,
+    },
+    fontSize: {
+      type: Number,
+      default: 48,
     },
     signatureType: {
       type: String,

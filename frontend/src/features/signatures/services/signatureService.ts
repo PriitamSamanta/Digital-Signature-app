@@ -42,3 +42,19 @@ export const deleteSignature = async (
 
   return response.data;
 };
+
+export const resizeSignature =
+  async (
+    signatureId: string,
+    fontSize: number
+  ) => {
+    const response =
+      await api.patch(
+        `/signatures/${signatureId}/resize`,
+        {
+          fontSize,
+        }
+      );
+
+    return response.data;
+  };

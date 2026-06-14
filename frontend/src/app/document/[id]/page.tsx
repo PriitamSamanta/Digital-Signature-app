@@ -18,6 +18,7 @@ import {
     createSignature,
     getSignatures,
     deleteSignature,
+    resizeSignature,
 } from "@/features/signatures/services/signatureService";
 import {
     Signature,
@@ -423,6 +424,7 @@ export default function DocumentPage() {
                                             text={signature.signatureText}
                                             x={finalX}
                                             y={finalY}
+                                            fontSize={signature.fontSize}
                                             selected={
                                                 selectedSignatureId ===
                                                 signature._id
@@ -454,6 +456,48 @@ export default function DocumentPage() {
 
                                                     setSelectedSignatureId(
                                                         null
+                                                    );
+                                                } catch (error) {
+                                                    console.error(error);
+                                                }
+                                            }}
+
+                                            onIncreaseSize={async () => {
+                                                try {
+                                                    await resizeSignature(
+                                                        signature._id,
+                                                        signature.fontSize + 4
+                                                    );
+
+                                                    const signatureData =
+                                                        await getSignatures(id);
+
+                                                    setSavedSignatures(
+                                                        signatureData.signatures
+                                                    );
+                                                } catch (error) {
+                                                    console.error(error);
+                                                }
+                                            }}
+
+                                            onDecreaseSize={async () => {
+                                                try {
+                                                    const newSize =
+                                                        Math.max(
+                                                            20,
+                                                            signature.fontSize - 4
+                                                        );
+
+                                                    await resizeSignature(
+                                                        signature._id,
+                                                        newSize
+                                                    );
+
+                                                    const signatureData =
+                                                        await getSignatures(id);
+
+                                                    setSavedSignatures(
+                                                        signatureData.signatures
                                                     );
                                                 } catch (error) {
                                                     console.error(error);

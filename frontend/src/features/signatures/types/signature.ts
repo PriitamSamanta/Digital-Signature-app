@@ -8,6 +8,8 @@ export interface Signature {
   xPercent: number;
   yPercent: number;
 
+  fontSize: number;
+
   signatureType: "typed";
 
   signatureText: string;

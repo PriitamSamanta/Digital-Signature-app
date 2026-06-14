@@ -14,9 +14,11 @@ export const createSignature = async (
       page,
       xPercent,
       yPercent,
+      fontSize,
       signatureType,
       signatureText,
       signatureImage,
+
     } = req.body;
 
 
@@ -29,7 +31,8 @@ export const createSignature = async (
 
       xPercent,
       yPercent,
-
+      fontSize,
+      
       signatureType,
 
       signatureText,
@@ -126,6 +129,57 @@ export const deleteSignature = async (
       success: true,
       message:
         "Signature deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+export const resizeSignature = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    const { fontSize } = req.body;
+
+    const signature =
+      await Signature.findById(id);
+
+    if (!signature) {
+      res.status(404).json({
+        success: false,
+        message: "Signature not found",
+      });
+      return;
+    }
+
+    if (
+      signature.signerId.toString() !==
+      req.userId
+    ) {
+      res.status(403).json({
+        success: false,
+        message:
+          "You can only edit your own signature",
+      });
+      return;
+    }
+
+    signature.fontSize =
+      fontSize;
+
+    await signature.save();
+
+    res.status(200).json({
+      success: true,
+      signature,
     });
   } catch (error) {
     console.error(error);
