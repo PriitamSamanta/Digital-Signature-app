@@ -8,6 +8,8 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 
 import {
     getDocumentById,
+    finalizeDocument,
+    downloadSignedPdf,
 } from "@/features/documents/services/documentService";
 
 import SignatureToolbar from "@/features/signatures/components/SignatureToolbar";
@@ -208,6 +210,26 @@ export default function DocumentPage() {
         );
     }
 
+    const handleFinalizeDocument =
+        async () => {
+            try {
+                await finalizeDocument(id);
+
+                const documentData =
+                    await getDocumentById(id);
+
+                setPdfDocument(
+                    documentData.document
+                );
+
+                alert(
+                    "Signed PDF generated successfully"
+                );
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
     const pdfUrl =
         `http://localhost:5000/${pdfDocument.filePath.replace(
             /\\/g,
@@ -236,6 +258,45 @@ export default function DocumentPage() {
             pageRect.top - containerRect.top;
 
     }
+
+    const handleDownloadSignedPdf =
+        async () => {
+            try {
+                const blob =
+                    await downloadSignedPdf(
+                        id
+                    );
+
+                const url =
+                    window.URL.createObjectURL(
+                        blob
+                    );
+
+                const link =
+                    document.createElement(
+                        "a"
+                    );
+
+                link.href = url;
+
+                link.download =
+                    "signed-document.pdf";
+
+                document.body.appendChild(
+                    link
+                );
+
+                link.click();
+
+                link.remove();
+
+                window.URL.revokeObjectURL(
+                    url
+                );
+            } catch (error) {
+                console.error(error);
+            }
+        };
 
     return (
         <DashboardLayout>
@@ -307,16 +368,61 @@ export default function DocumentPage() {
                         )}
                     </div>
 
-                    {draftSignature && (
+                    <div className="mt-4 flex flex-wrap gap-3">
+
+                        {draftSignature && (
+                            <button
+                                onClick={
+                                    handleSaveSignature
+                                }
+                                className="
+                                    rounded-lg
+                                    bg-green-600
+                                    px-4
+                                    py-2
+                                    text-white
+                                    hover:bg-green-700
+                                "
+                            >
+                                Save Signature
+                            </button>
+                        )}
+
                         <button
                             onClick={
-                                handleSaveSignature
+                                handleFinalizeDocument
                             }
-                            className="mt-4 rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                            className="
+                                rounded-lg
+                                bg-blue-600
+                                px-4
+                                py-2
+                                text-white
+                                hover:bg-blue-700
+                            "
                         >
-                            Save Signature
+                            Finalize Document
                         </button>
-                    )}
+
+                        {pdfDocument?.signedFilePath && (
+                            <button
+                                onClick={
+                                    handleDownloadSignedPdf
+                                }
+                                className="
+                                    rounded-lg
+                                    bg-purple-600
+                                    px-4
+                                    py-2
+                                    text-white
+                                    hover:bg-purple-700
+                                "
+                            >
+                                Download Signed PDF
+                            </button>
+                        )}
+
+                    </div>
                 </div>
 
                 {/* PDF */}

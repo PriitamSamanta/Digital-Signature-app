@@ -37,3 +37,31 @@ export const getDocumentById = async (
 
   return response.data;
 };
+
+export const finalizeDocument =
+  async (
+    documentId: string
+  ) => {
+    const response =
+      await api.post(
+        `/docs/${documentId}/finalize`
+      );
+
+    return response.data;
+  };
+
+
+export const downloadSignedPdf =
+  async (
+    documentId: string
+  ) => {
+    const response =
+      await api.get(
+        `/docs/${documentId}/download-signed`,
+        {
+          responseType: "blob",
+        }
+      );
+
+    return response.data;
+  };

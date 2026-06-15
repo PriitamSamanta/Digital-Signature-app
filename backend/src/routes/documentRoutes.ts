@@ -8,6 +8,8 @@ import {
     getDocuments,
     getDocumentById,
     updateDocumentStatus,
+    finalizeDocument,
+    downloadSignedPdf,
 } from "../controllers/documentController";
 
 const router = Router();
@@ -35,6 +37,18 @@ router.patch(
     "/:id/status",
     authMiddleware,
     updateDocumentStatus
+);
+
+router.post(
+    "/:id/finalize",
+    authMiddleware,
+    finalizeDocument
+);
+
+router.get(
+  "/:id/download-signed",
+  authMiddleware,
+  downloadSignedPdf
 );
 
 export default router;

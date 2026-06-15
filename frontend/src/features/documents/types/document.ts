@@ -3,6 +3,7 @@ export interface Document {
   title: string;
   originalFileName: string;
   filePath: string;
+  signedFilePath?: string;
   fileSize: number;
   status: string;
 

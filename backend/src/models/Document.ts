@@ -7,6 +7,7 @@ export interface IDocument extends MDocument {
   fileSize: number;
   ownerId: mongoose.Types.ObjectId;
   status: string;
+  signedFilePath?: string;
 }
 
 const documentSchema = new Schema<IDocument>(
@@ -24,6 +25,10 @@ const documentSchema = new Schema<IDocument>(
     filePath: {
       type: String,
       required: true,
+    },
+
+    signedFilePath: {
+      type: String,
     },
 
     fileSize: {
