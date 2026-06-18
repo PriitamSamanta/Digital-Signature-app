@@ -1,6 +1,7 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 import fs from "fs";
 import path from "path";
+import { v4 as uuidv4 } from "uuid";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
 import Signature from "../models/Signature";
@@ -303,3 +304,54 @@ export const downloadSignedPdf = async (
     });
   }
 };
+
+export const generatePublicLink =
+  async (
+    req: AuthRequest,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const document =
+        await Document.findOne({
+          _id: req.params.id,
+          ownerId: req.userId,
+        });
+
+      if (!document) {
+        res.status(404).json({
+          success: false,
+          message:
+            "Document not found",
+        });
+        return;
+      }
+
+      const token =
+        uuidv4();
+
+      document.publicToken =
+        token;
+
+      document.publicSigningEnabled =
+        true;
+
+      await document.save();
+
+      res.status(200).json({
+        success: true,
+        publicLink:
+          `http://localhost:3000/sign/${token}`,
+      });
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        success: false,
+        message:
+          "Server Error",
+      });
+    }
+  };
+
+
+  

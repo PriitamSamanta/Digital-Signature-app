@@ -10,6 +10,7 @@ import {
     getDocumentById,
     finalizeDocument,
     downloadSignedPdf,
+    generatePublicLink,
 } from "@/features/documents/services/documentService";
 
 import SignatureToolbar from "@/features/signatures/components/SignatureToolbar";
@@ -56,6 +57,9 @@ export default function DocumentPage() {
 
     const [savedSignatures, setSavedSignatures] =
         useState<Signature[]>([]);
+
+    const [publicLink, setPublicLink] =
+        useState("");
 
     const [isModalOpen, setIsModalOpen] =
         useState(false);
@@ -225,6 +229,24 @@ export default function DocumentPage() {
                 alert(
                     "Signed PDF generated successfully"
                 );
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+    const handleGeneratePublicLink =
+        async () => {
+            try {
+
+                const data =
+                    await generatePublicLink(
+                        id
+                    );
+
+                setPublicLink(
+                    data.publicLink
+                );
+
             } catch (error) {
                 console.error(error);
             }
@@ -420,6 +442,64 @@ export default function DocumentPage() {
                             >
                                 Download Signed PDF
                             </button>
+                        )}
+
+                        <button
+                            onClick={
+                                handleGeneratePublicLink
+                            }
+                            className="
+                                rounded-lg
+                                bg-orange-600
+                                px-4
+                                py-2
+                                text-white
+                            "
+                        >
+                            Generate Public Link
+                        </button>
+
+                        {publicLink && (
+                            <div className="mt-4 rounded-lg border p-4">
+
+                                <p className="mb-2 font-medium">
+                                    Public Signing Link
+                                </p>
+
+                                <input
+                                    readOnly
+                                    value={publicLink}
+                                    className="
+                w-full
+                rounded-md
+                border
+                p-2
+            "
+                                />
+
+                                <button
+                                    onClick={async () => {
+                                        await navigator.clipboard.writeText(
+                                            publicLink
+                                        );
+
+                                        alert(
+                                            "Link copied successfully"
+                                        );
+                                    }}
+                                    className="
+                                        mt-3
+                                        rounded-lg
+                                        bg-blue-600
+                                        px-4
+                                        py-2
+                                        text-white
+                                    "
+                                >
+                                    Copy Link
+                                </button>
+
+                            </div>
                         )}
 
                     </div>

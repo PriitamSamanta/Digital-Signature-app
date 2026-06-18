@@ -65,3 +65,15 @@ export const downloadSignedPdf =
 
     return response.data;
   };
+
+export const generatePublicLink =
+  async (
+    documentId: string
+  ) => {
+    const response =
+      await api.post(
+        `/docs/${documentId}/generate-link`
+      );
+
+    return response.data;
+  };

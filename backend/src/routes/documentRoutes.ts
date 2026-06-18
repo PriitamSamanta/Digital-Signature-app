@@ -10,6 +10,7 @@ import {
     updateDocumentStatus,
     finalizeDocument,
     downloadSignedPdf,
+    generatePublicLink,
 } from "../controllers/documentController";
 
 const router = Router();
@@ -49,6 +50,12 @@ router.get(
   "/:id/download-signed",
   authMiddleware,
   downloadSignedPdf
+);
+
+router.post(
+  "/:id/generate-link",
+  authMiddleware,
+  generatePublicLink
 );
 
 export default router;

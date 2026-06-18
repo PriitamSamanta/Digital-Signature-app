@@ -8,6 +8,8 @@ export interface IDocument extends MDocument {
   ownerId: mongoose.Types.ObjectId;
   status: string;
   signedFilePath?: string;
+  publicToken?: string;
+  publicSigningEnabled: boolean;
 }
 
 const documentSchema = new Schema<IDocument>(
@@ -40,6 +42,14 @@ const documentSchema = new Schema<IDocument>(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+    publicToken: {
+      type: String,
+    },
+
+    publicSigningEnabled: {
+      type: Boolean,
+      default: false,
     },
 
     status: {

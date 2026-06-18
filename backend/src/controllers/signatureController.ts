@@ -190,3 +190,4 @@ export const resizeSignature = async (
     });
   }
 };
+
