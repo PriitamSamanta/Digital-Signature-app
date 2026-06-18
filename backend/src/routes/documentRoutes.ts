@@ -11,6 +11,8 @@ import {
     finalizeDocument,
     downloadSignedPdf,
     generatePublicLink,
+    sendInvitation,
+    getAuditLogs,
 } from "../controllers/documentController";
 
 const router = Router();
@@ -26,6 +28,18 @@ router.get(
     "/",
     authMiddleware,
     getDocuments
+);
+
+router.get(
+  "/:id/audit",
+  authMiddleware,
+  getAuditLogs
+);
+
+router.get(
+  "/:id",
+  authMiddleware,
+  getDocumentById
 );
 
 router.get(
@@ -56,6 +70,12 @@ router.post(
   "/:id/generate-link",
   authMiddleware,
   generatePublicLink
+);
+
+router.post(
+  "/:id/send-invitation",
+  authMiddleware,
+  sendInvitation
 );
 
 export default router;

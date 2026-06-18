@@ -77,3 +77,20 @@ export const generatePublicLink =
 
     return response.data;
   };
+
+export const sendInvitation =
+  async (
+    documentId: string,
+    email: string
+  ) => {
+
+    const response =
+      await api.post(
+        `/docs/${documentId}/send-invitation`,
+        {
+          email,
+        }
+      );
+
+    return response.data;
+  };

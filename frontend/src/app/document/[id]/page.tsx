@@ -11,6 +11,7 @@ import {
     finalizeDocument,
     downloadSignedPdf,
     generatePublicLink,
+    sendInvitation,
 } from "@/features/documents/services/documentService";
 
 import SignatureToolbar from "@/features/signatures/components/SignatureToolbar";
@@ -60,6 +61,14 @@ export default function DocumentPage() {
 
     const [publicLink, setPublicLink] =
         useState("");
+
+    const [recipientEmail,
+        setRecipientEmail] =
+        useState("");
+
+    const [sendingEmail,
+        setSendingEmail] =
+        useState(false);
 
     const [isModalOpen, setIsModalOpen] =
         useState(false);
@@ -249,6 +258,47 @@ export default function DocumentPage() {
 
             } catch (error) {
                 console.error(error);
+            }
+        };
+
+    const handleSendInvitation =
+        async () => {
+
+            if (!recipientEmail) {
+                alert(
+                    "Please enter email"
+                );
+                return;
+            }
+
+            try {
+
+                setSendingEmail(true);
+
+                const response =
+                    await sendInvitation(
+                        id,
+                        recipientEmail
+                    );
+
+                alert(
+                    response.message
+                );
+
+                setRecipientEmail("");
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "Failed to send invitation"
+                );
+
+            } finally {
+
+                setSendingEmail(false);
+
             }
         };
 
@@ -470,11 +520,11 @@ export default function DocumentPage() {
                                     readOnly
                                     value={publicLink}
                                     className="
-                w-full
-                rounded-md
-                border
-                p-2
-            "
+                                        w-full
+                                        rounded-md
+                                        border
+                                        p-2
+                                    "
                                 />
 
                                 <button
@@ -501,6 +551,56 @@ export default function DocumentPage() {
 
                             </div>
                         )}
+
+                        <div className="mt-4">
+
+                            <label
+                                className="
+                                    mb-2
+                                    block
+                                    font-medium
+                                "
+                            >
+                                Recipient Email
+                            </label>
+
+                            <input
+                                type="email"
+                                value={recipientEmail}
+                                onChange={(e) =>
+                                    setRecipientEmail(
+                                        e.target.value
+                                    )
+                                }
+                                placeholder="john@gmail.com"
+                                className="
+                                    w-full
+                                    rounded-lg
+                                    border
+                                    p-2
+                                "
+                            />
+
+                            <button
+                                onClick={
+                                    handleSendInvitation
+                                }
+                                disabled={sendingEmail}
+                                className="
+                                    mt-3
+                                    rounded-lg
+                                    bg-blue-600
+                                    px-4
+                                    py-2
+                                    text-white
+                                "
+                            >
+                                {sendingEmail
+                                    ? "Sending..."
+                                    : "Send Invitation"}
+                            </button>
+
+                        </div>
 
                     </div>
                 </div>

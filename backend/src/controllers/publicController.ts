@@ -2,6 +2,7 @@ import { Response, Request } from "express";
 
 import Signature from "../models/Signature";
 import Document from "../models/Document";
+import { createAuditLog } from "../services/auditService";
 
 export const getPublicDocument =
     async (
@@ -91,6 +92,11 @@ export const createPublicSignature =
 
                     status: "signed",
                 });
+
+            await createAuditLog(
+                document._id.toString(),
+                "PUBLIC_SIGNATURE_ADDED"
+            );
 
             res.status(201).json({
                 success: true,

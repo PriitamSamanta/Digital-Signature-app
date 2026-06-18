@@ -5,9 +5,12 @@ import { v4 as uuidv4 } from "uuid";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
 import Signature from "../models/Signature";
+import AuditLog from "../models/AuditLog";
 
 import { AuthRequest } from "../types/auth";
 import Document from "../models/Document";
+import { sendSigningEmail } from "../services/emailService";
+import { createAuditLog } from "../services/auditService";
 
 export const uploadDocument = async (
   req: AuthRequest,
@@ -30,6 +33,12 @@ export const uploadDocument = async (
       ownerId: req.userId,
       status: "pending",
     });
+
+    await createAuditLog(
+      document._id.toString(),
+      "DOCUMENT_UPLOADED",
+      req.userId
+    );
 
     res.status(201).json({
       success: true,
@@ -337,6 +346,12 @@ export const generatePublicLink =
 
       await document.save();
 
+      await createAuditLog(
+        document._id.toString(),
+        "PUBLIC_LINK_GENERATED",
+        req.userId
+      );
+
       res.status(200).json({
         success: true,
         publicLink:
@@ -354,4 +369,80 @@ export const generatePublicLink =
   };
 
 
-  
+export const sendInvitation =
+  async (
+    req: AuthRequest,
+    res: Response
+  ) => {
+
+    const {
+      email
+    } = req.body;
+
+    const document =
+      await Document.findOne({
+        _id: req.params.id,
+        ownerId: req.userId,
+      });
+
+    if (!document) {
+      return res.status(404).json({
+        success: false,
+      });
+    }
+
+    const signingLink =
+      `http://localhost:3000/sign/${document.publicToken}`;
+
+    await sendSigningEmail(
+      email,
+      signingLink
+    );
+
+    await createAuditLog(
+      document._id.toString(),
+      "INVITATION_SENT",
+      req.userId,
+      email
+    );
+
+    res.status(200).json({
+      success: true,
+      message:
+        "Invitation sent",
+    });
+  };
+
+export const getAuditLogs = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  try {
+
+    const logs =
+      await AuditLog.find({
+        documentId:
+          req.params.id,
+      }).sort({
+        createdAt: -1,
+      });
+
+    res.status(200).json({
+      success: true,
+      count: logs.length,
+      logs,
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message:
+        "Server Error",
+    });
+
+  }
+};
+

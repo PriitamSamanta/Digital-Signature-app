@@ -1,6 +1,8 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
+
 import path from "path";
 import connectDB from "./config/db";
 import authRoutes from "./routes/authRoutes";
@@ -8,7 +10,7 @@ import documentRoutes from "./routes/documentRoutes";
 import signatureRoutes from "./routes/signatureRoutes";
 import publicRoutes from "./routes/publicRoutes"
 
-dotenv.config();
+
 
 connectDB();
 
