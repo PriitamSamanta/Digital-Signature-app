@@ -94,3 +94,16 @@ export const sendInvitation =
 
     return response.data;
   };
+
+export const getAuditLogs =
+  async (
+    documentId: string
+  ) => {
+
+    const response =
+      await api.get(
+        `/docs/${documentId}/audit`
+      );
+
+    return response.data;
+  };

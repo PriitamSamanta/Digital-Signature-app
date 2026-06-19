@@ -12,6 +12,7 @@ import {
     downloadSignedPdf,
     generatePublicLink,
     sendInvitation,
+    getAuditLogs,
 } from "@/features/documents/services/documentService";
 
 import SignatureToolbar from "@/features/signatures/components/SignatureToolbar";
@@ -88,6 +89,25 @@ export default function DocumentPage() {
         null
     );
 
+    const [
+        auditLogs,
+        setAuditLogs
+    ] = useState<any[]>([]);
+
+    const actionLabels = {
+        DOCUMENT_UPLOADED:
+            "📄 Document Uploaded",
+
+        PUBLIC_LINK_GENERATED:
+            "🔗 Public Link Generated",
+
+        INVITATION_SENT:
+            "📧 Invitation Sent",
+
+        PUBLIC_SIGNATURE_ADDED:
+            "✍️ Public Signature Added",
+    };
+
     useEffect(() => {
         if (!id) return;
 
@@ -106,6 +126,14 @@ export default function DocumentPage() {
                 setSavedSignatures(
                     signatureData.signatures || []
                 );
+
+                const auditData =
+                    await getAuditLogs(id);
+
+                setAuditLogs(
+                    auditData.logs || []
+                );
+
             } catch (error) {
                 console.error(error);
             }
@@ -816,6 +844,57 @@ export default function DocumentPage() {
                         setIsModalOpen(false);
                     }}
                 />
+
+                <div className="mt-8 rounded-xl bg-white p-4 shadow-sm">
+
+                    <h2 className="mb-4 text-lg font-semibold">
+                        Audit Trail
+                    </h2>
+
+                    {auditLogs.map((log) => (
+
+                        <div
+                            key={log._id}
+                            className="
+                                border-l-2
+                                border-gray-300
+                                pl-4
+                                py-3
+                            "
+                        >
+
+                            <p>
+                                {
+                                    actionLabels[
+                                    log.action as keyof typeof actionLabels
+                                    ] || log.action
+                                }
+                            </p>
+
+                            {log.action === "INVITATION_SENT" && (
+                                <p className="text-sm text-blue-600">
+                                    Sent to: {log.details}
+                                </p>
+                            )}
+
+                            {log.action === "PUBLIC_SIGNATURE_ADDED" && (
+                                <p className="text-sm text-green-600">
+                                    Signed by: {log.details}
+                                </p>
+                            )}
+
+
+                            <p className="text-sm text-gray-500">
+                                {new Date(
+                                    log.createdAt
+                                ).toLocaleString()}
+                            </p>
+
+                        </div>
+
+                    ))}
+
+                </div>
             </div>
         </DashboardLayout>
     );

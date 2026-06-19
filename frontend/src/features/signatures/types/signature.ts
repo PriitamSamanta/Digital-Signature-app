@@ -14,6 +14,8 @@ export interface Signature {
 
   signatureText: string;
 
+  signerName?: string;
+
   createdAt?: string;
   updatedAt?: string;
 }

@@ -68,6 +68,11 @@ export default function PublicSignPage() {
     const pdfContainerRef =
         useRef<HTMLDivElement>(null);
 
+    const [
+        signerName,
+        setSignerName
+    ] = useState("");
+
 
 
 
@@ -187,6 +192,7 @@ export default function PublicSignPage() {
                         signatureText:
                             draftSignature.text,
                         fontSize: 48,
+                        signerName,
                     }
                 );
 
@@ -250,6 +256,37 @@ export default function PublicSignPage() {
     return (
         <div className="p-6">
             <h1>{pdfDocument.title}</h1>
+
+            <div className="mb-4">
+
+                <label
+                    className="
+                        mb-2
+                        block
+                        font-medium
+                        "
+                >
+                    Your Name
+                </label>
+
+                <input
+                    type="text"
+                    value={signerName}
+                    onChange={(e) =>
+                        setSignerName(
+                            e.target.value
+                        )
+                    }
+                    placeholder="John Doe"
+                    className="
+                        w-full
+                        rounded-lg
+                        border
+                        p-2
+                        "
+                    />
+
+            </div>
 
             <SignatureToolbar
                 onAddSignature={() =>

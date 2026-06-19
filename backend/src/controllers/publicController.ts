@@ -55,7 +55,10 @@ export const createPublicSignature =
                 yPercent,
                 signatureType,
                 signatureText,
+                signerName,
             } = req.body;
+
+
 
             const document =
                 await Document.findOne({
@@ -89,13 +92,16 @@ export const createPublicSignature =
                     signatureType,
 
                     signatureText,
+                    signerName,
 
                     status: "signed",
                 });
 
             await createAuditLog(
                 document._id.toString(),
-                "PUBLIC_SIGNATURE_ADDED"
+                "PUBLIC_SIGNATURE_ADDED",
+                undefined,
+                signerName
             );
 
             res.status(201).json({

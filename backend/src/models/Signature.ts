@@ -18,7 +18,7 @@ export interface ISignature extends MDocument {
 
   signatureText?: string;
 
-  signatureImage?: string;
+  signerName?: string;
 
   status: string;
 }
@@ -66,7 +66,7 @@ const signatureSchema = new Schema<ISignature>(
       type: String,
     },
 
-    signatureImage: {
+    signerName: {
       type: String,
     },
 
