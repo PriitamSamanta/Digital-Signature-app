@@ -217,24 +217,6 @@ FRONTEND_URL=http://localhost:3000
 
 ---
 
-## 📸 Screenshots
-
-### Landing Page
-(Add Screenshot)
-
-### Login Page
-(Add Screenshot)
-
-### Dashboard
-(Add Screenshot)
-
-### Public Signing Page
-(Add Screenshot)
-
-### Audit Trail
-(Add Screenshot)
-
----
 
 ## 🔮 Future Enhancements
 
