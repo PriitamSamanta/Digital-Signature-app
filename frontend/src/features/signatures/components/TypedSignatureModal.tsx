@@ -21,7 +21,7 @@ export default function TypedSignatureModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-        <h2 className="mb-2 text-xl font-semibold">
+        <h2 className="mb-2 text-xl font-semibold text-black">
           Add Signature
         </h2>
 
@@ -61,7 +61,7 @@ export default function TypedSignatureModal({
         <div className="mt-6 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="rounded-lg border px-4 py-2"
+            className="rounded-lg border px-4 py-2 text-black"
           >
             Cancel
           </button>
@@ -75,7 +75,7 @@ export default function TypedSignatureModal({
 
               setSignature("");
             }}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-black hover:bg-blue-700"
+            className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
           >
             Use Signature
           </button>

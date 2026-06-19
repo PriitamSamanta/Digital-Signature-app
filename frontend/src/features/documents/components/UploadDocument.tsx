@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { uploadDocument } from "../services/documentService";
 
 export default function UploadDocument() {
@@ -18,22 +19,22 @@ export default function UploadDocument() {
 
       await uploadDocument(file);
 
-      alert("Upload Success");
+      toast.success("Upload Success");
 
       setFile(null);
     } catch (error) {
       console.error(error);
-      alert("Upload Failed");
+      toast.error("Upload Failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 text-black">
       <label
         htmlFor="pdf-upload"
-        className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 p-10 text-center transition hover:border-blue-500 hover:bg-blue-50"
+        className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 p-10 text-center text-black transition hover:border-blue-500 hover:bg-blue-50"
       >
         <div className="space-y-2">
           <p className="text-lg font-semibold text-slate-700">

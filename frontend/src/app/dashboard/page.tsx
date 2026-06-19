@@ -76,7 +76,7 @@ export default function DashboardPage() {
                 Total Documents
               </p>
 
-              <h2 className="mt-2 text-3xl font-bold">
+              <h2 className="mt-2 text-3xl font-bold text-black">
                 {totalDocuments}
               </h2>
             </div>
@@ -104,7 +104,7 @@ export default function DashboardPage() {
 
           {/* Upload Section */}
           <div className="mb-8 rounded-xl bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-xl font-semibold">
+            <h2 className="mb-4 text-xl font-semibold text-black">
               Upload Document
             </h2>
 
@@ -113,7 +113,7 @@ export default function DashboardPage() {
 
           {/* Documents Section */}
           <div className="rounded-xl bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-xl font-semibold">
+            <h2 className="mb-4 text-xl font-semibold text-black">
               Recent Documents
             </h2>
 

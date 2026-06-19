@@ -8,7 +8,7 @@ export default function DocumentsPage() {
     <DashboardLayout>
       <div className="p-6">
         <div className="mx-auto max-w-7xl">
-          <h1 className="mb-6 text-3xl font-bold">
+          <h1 className="mb-6 text-3xl font-bold text-black">
             Documents
           </h1>
 

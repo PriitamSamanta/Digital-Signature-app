@@ -18,6 +18,7 @@ import {
 import SignatureToolbar from "@/features/signatures/components/SignatureToolbar";
 import SignatureOverlay from "@/features/signatures/components/SignatureOverlay";
 import TypedSignatureModal from "@/features/signatures/components/TypedSignatureModal";
+import { toast } from "sonner";
 
 import {
     createSignature,
@@ -263,7 +264,7 @@ export default function DocumentPage() {
                     documentData.document
                 );
 
-                alert(
+                toast.success(
                     "Signed PDF generated successfully"
                 );
             } catch (error) {
@@ -293,7 +294,7 @@ export default function DocumentPage() {
         async () => {
 
             if (!recipientEmail) {
-                alert(
+                toast.error(
                     "Please enter email"
                 );
                 return;
@@ -309,7 +310,7 @@ export default function DocumentPage() {
                         recipientEmail
                     );
 
-                alert(
+                toast.success(
                     response.message
                 );
 
@@ -319,7 +320,7 @@ export default function DocumentPage() {
 
                 console.error(error);
 
-                alert(
+                toast.error(
                     "Failed to send invitation"
                 );
 
@@ -460,6 +461,7 @@ export default function DocumentPage() {
                                         shadow-sm
                                         italic
                                         text-lg
+                                        text-black
                                         "
                                 >
                                     {signature}
@@ -538,9 +540,9 @@ export default function DocumentPage() {
                         </button>
 
                         {publicLink && (
-                            <div className="mt-4 rounded-lg border p-4">
+                            <div className="mt-4 rounded-lg border p-4 text-black">
 
-                                <p className="mb-2 font-medium">
+                                <p className="mb-2 font-medium text-black">
                                     Public Signing Link
                                 </p>
 
@@ -552,6 +554,7 @@ export default function DocumentPage() {
                                         rounded-md
                                         border
                                         p-2
+                                        text-black
                                     "
                                 />
 
@@ -561,7 +564,7 @@ export default function DocumentPage() {
                                             publicLink
                                         );
 
-                                        alert(
+                                        toast.success(
                                             "Link copied successfully"
                                         );
                                     }}
@@ -580,13 +583,14 @@ export default function DocumentPage() {
                             </div>
                         )}
 
-                        <div className="mt-4">
+                        <div className="mt-4 text-black">
 
                             <label
                                 className="
                                     mb-2
                                     block
                                     font-medium
+                                    text-black
                                 "
                             >
                                 Recipient Email
@@ -606,6 +610,7 @@ export default function DocumentPage() {
                                     rounded-lg
                                     border
                                     p-2
+                                    text-black
                                 "
                             />
 
@@ -847,7 +852,7 @@ export default function DocumentPage() {
 
                 <div className="mt-8 rounded-xl bg-white p-4 shadow-sm">
 
-                    <h2 className="mb-4 text-lg font-semibold">
+                    <h2 className="mb-4 text-lg font-semibold text-black">
                         Audit Trail
                     </h2>
 
@@ -860,10 +865,11 @@ export default function DocumentPage() {
                                 border-gray-300
                                 pl-4
                                 py-3
+                                text-black
                             "
                         >
 
-                            <p>
+                            <p className="font-medium text-black">
                                 {
                                     actionLabels[
                                     log.action as keyof typeof actionLabels

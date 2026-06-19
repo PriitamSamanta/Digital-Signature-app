@@ -8,7 +8,7 @@ export default function ProfilePage() {
       <div className="p-6">
         <div className="mx-auto max-w-4xl">
           <div className="rounded-xl bg-white p-6 shadow-sm">
-            <h1 className="mb-6 text-3xl font-bold">
+            <h1 className="mb-6 text-3xl font-bold text-black">
               Profile
             </h1>
 

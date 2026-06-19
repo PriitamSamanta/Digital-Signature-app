@@ -255,217 +255,178 @@ export default function PublicSignPage() {
 
     return (
         <div className="p-6">
-            <h1>{pdfDocument.title}</h1>
+            <div className="mx-auto max-w-7xl">
+                <div className="mb-6">
+                    <h1 className="text-3xl font-bold text-black">
+                        {pdfDocument.title}
+                    </h1>
+                    <p className="mt-2 text-sm text-slate-500">
+                        Sign this public document by adding your name, selecting a signature, and dragging it onto the PDF.
+                    </p>
+                </div>
 
-            <div className="mb-4">
-
-                <label
-                    className="
-                        mb-2
-                        block
-                        font-medium
-                        "
-                >
-                    Your Name
-                </label>
-
-                <input
-                    type="text"
-                    value={signerName}
-                    onChange={(e) =>
-                        setSignerName(
-                            e.target.value
-                        )
-                    }
-                    placeholder="John Doe"
-                    className="
-                        w-full
-                        rounded-lg
-                        border
-                        p-2
-                        "
-                    />
-
-            </div>
-
-            <SignatureToolbar
-                onAddSignature={() =>
-                    setIsModalOpen(true)
-                }
-            />
-
-            <div className="mt-4 flex gap-3 flex-wrap">
-
-                {availableSignatures.map(
-                    (signature, index) => (
-                        <div
-                            key={index}
-                            draggable
-                            onDragStart={(e) => {
-                                e.dataTransfer.setData(
-                                    "signature",
-                                    signature
-                                );
-                            }}
-                            className="
-                                rounded-lg
-                                border
-                                bg-white
-                                px-4
-                                py-2
-                                shadow-sm
-                                italic
-                                text-lg
-                            "
-                        >
-                            {signature}
-                        </div>
-                    )
-                )}
-
-            </div>
-
-            <div className="mt-4 flex flex-wrap gap-3">
-                {draftSignature && (
-                    <button
-                        onClick={
-                            handleSaveSignature
-                        }
-                        className="
-                            mt-4
-                            rounded-lg
-                            bg-green-600
-                            px-4
-                            py-2
-                            text-white
-                        "
-                    >
-                        Save Signature
-                    </button>
-                )}
-            </div>
-
-            <div
-                ref={pdfContainerRef}
-                className="relative"
-                onDragOver={(e) =>
-                    e.preventDefault()
-                }
-                onDrop={(e) => {
-                    e.preventDefault();
-
-                    const signature =
-                        e.dataTransfer.getData(
-                            "signature"
-                        );
-
-                    const rect =
-                        e.currentTarget.getBoundingClientRect();
-
-                    const x =
-                        e.clientX - rect.left;
-
-                    const y =
-                        e.clientY - rect.top;
-
-                    setDraftSignature({
-                        text: signature,
-                        x,
-                        y,
-                    });
-                }}
-            >
-                <PdfViewer
-                    fileUrl={pdfUrl}
-                />
-
-                <div
-                    className="
-                        absolute
-                        inset-0
-                        z-50
-                    "
-                >
-                    {draftSignature && (
-
-                        <SignatureOverlay
-                            text={
-                                draftSignature.text
+                <div className="mb-6 rounded-xl bg-white p-6 shadow-sm">
+                    <div className="mb-6">
+                        <label className="mb-2 block font-medium text-black">
+                            Your Name
+                        </label>
+                        <input
+                            type="text"
+                            value={signerName}
+                            onChange={(e) =>
+                                setSignerName(
+                                    e.target.value
+                                )
                             }
-                            x={
-                                draftSignature.x
-                            }
-                            y={
-                                draftSignature.y
-                            }
-                            draggable
-                            onDragStop={(
-                                x,
-                                y
-                            ) => {
-                                setDraftSignature({
-                                    ...draftSignature,
-                                    x,
-                                    y,
-                                });
-                            }}
+                            placeholder="John Doe"
+                            className="w-full rounded-lg border p-2 text-black"
                         />
+                    </div>
 
+                    <div className="mb-4">
+                        <SignatureToolbar
+                            onAddSignature={() =>
+                                setIsModalOpen(true)
+                            }
+                        />
+                    </div>
 
-                    )}
+                    <div className="mt-4 flex gap-3 flex-wrap">
+                        {availableSignatures.map(
+                            (signature, index) => (
+                                <div
+                                    key={index}
+                                    draggable
+                                    onDragStart={(e) => {
+                                        e.dataTransfer.setData(
+                                            "signature",
+                                            signature
+                                        );
+                                    }}
+                                    className="rounded-lg border bg-white px-4 py-2 shadow-sm italic text-lg text-black"
+                                >
+                                    {signature}
+                                </div>
+                            )
+                        )}
+                    </div>
 
-                    {savedSignatures.map(
-                        (signature) => {
-
-                            const renderX =
-                                (signature.xPercent / 100) *
-                                pdfSize.width;
-
-                            const renderY =
-                                (signature.yPercent / 100) *
-                                pdfSize.height;
-
-                            const finalX =
-                                pageOffsetX + renderX;
-
-                            const finalY =
-                                pageOffsetY + renderY;
-
-                            return (
-                                <SignatureOverlay
-                                    key={signature._id}
-                                    text={signature.signatureText}
-                                    x={finalX}
-                                    y={finalY}
-                                    fontSize={signature.fontSize}
-                                />
-                            );
-                        }
+                    {draftSignature && (
+                        <div className="mt-4">
+                            <button
+                                onClick={
+                                    handleSaveSignature
+                                }
+                                className="rounded-lg bg-green-600 px-4 py-2 text-white"
+                            >
+                                Save Signature
+                            </button>
+                        </div>
                     )}
                 </div>
 
+                <div className="rounded-xl bg-white p-6 shadow-sm">
+                    <div className="relative overflow-hidden rounded-lg border border-slate-200 bg-slate-100 p-4"
+                        ref={pdfContainerRef}
+                        onDragOver={(e) =>
+                            e.preventDefault()
+                        }
+                        onDrop={(e) => {
+                            e.preventDefault();
 
+                            const signature =
+                                e.dataTransfer.getData(
+                                    "signature"
+                                );
+
+                            const rect =
+                                e.currentTarget.getBoundingClientRect();
+
+                            const x =
+                                e.clientX - rect.left;
+
+                            const y =
+                                e.clientY - rect.top;
+
+                            setDraftSignature({
+                                text: signature,
+                                x,
+                                y,
+                            });
+                        }}
+                    >
+                        <PdfViewer
+                            fileUrl={pdfUrl}
+                        />
+
+                        <div className="absolute inset-0 z-50">
+                            {draftSignature && (
+                                <SignatureOverlay
+                                    text={draftSignature.text}
+                                    x={draftSignature.x}
+                                    y={draftSignature.y}
+                                    draggable
+                                    onDragStop={(
+                                        x,
+                                        y
+                                    ) => {
+                                        setDraftSignature({
+                                            ...draftSignature,
+                                            x,
+                                            y,
+                                        });
+                                    }}
+                                />
+                            )}
+
+                            {savedSignatures.map(
+                                (signature) => {
+                                    const renderX =
+                                        (signature.xPercent / 100) *
+                                        pdfSize.width;
+
+                                    const renderY =
+                                        (signature.yPercent / 100) *
+                                        pdfSize.height;
+
+                                    const finalX =
+                                        pageOffsetX + renderX;
+
+                                    const finalY =
+                                        pageOffsetY + renderY;
+
+                                    return (
+                                        <SignatureOverlay
+                                            key={signature._id}
+                                            text={signature.signatureText}
+                                            x={finalX}
+                                            y={finalY}
+                                            fontSize={signature.fontSize}
+                                        />
+                                    );
+                                }
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <TypedSignatureModal
+                    isOpen={isModalOpen}
+                    onClose={() =>
+                        setIsModalOpen(false)
+                    }
+                    onSave={(signature) => {
+                        setAvailableSignatures(
+                            (prev) => [
+                                ...prev,
+                                signature,
+                            ]
+                        );
+
+                        setIsModalOpen(false);
+                    }}
+                />
             </div>
-
-
-
-            <TypedSignatureModal
-                isOpen={isModalOpen}
-                onClose={() =>
-                    setIsModalOpen(false)
-                }
-                onSave={(signature) => {
-
-                    setAvailableSignatures(
-                        (prev) => [
-                            ...prev,
-                            signature,
-                        ]
-                    );
-
-                    setIsModalOpen(false);
-                }}
-            />
         </div>
     );
 }
